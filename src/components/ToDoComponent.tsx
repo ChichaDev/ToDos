@@ -1,0 +1,58 @@
+import { useState } from "react";
+import ToDo from "./ToDo";
+import ToDoForm from "./ToDoForm";
+
+export type Todo = Readonly<{
+  id: string;
+  task: string;
+  complete: boolean;
+}>;
+type Todos = ReadonlyArray<Todo>;
+
+function ToDoComponent() {
+  const [todos, setTodos] = useState<Todos>([]);
+
+  const addTask = (userInput: string) => {
+    if (userInput) {
+      const newItem = {
+        id: Math.random().toString(36).substring(2, 9),
+        task: userInput,
+        complete: false,
+      };
+      setTodos([...todos, newItem]);
+    }
+  };
+
+  const removeTask = (id: string) => {
+    setTodos([...todos.filter((todo) => todo.id !== id)]);
+  };
+
+  const handleToggle = (id: string) => {
+    setTodos([
+      ...todos.map((todo) =>
+        todo.id === id ? { ...todo, complete: !todo.complete } : { ...todo }
+      ),
+    ]);
+  };
+
+  return (
+    <div className="App">
+      <header>
+        <h1>Task list: {todos.length}</h1>
+      </header>
+      <ToDoForm addTask={addTask} />
+      {todos.map((todo) => {
+        return (
+          <ToDo
+            todo={todo}
+            key={todo.id}
+            toggleTask={handleToggle}
+            removeTask={removeTask}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+export default ToDoComponent;
